@@ -1,0 +1,21 @@
+use chrono::{DateTime, Utc};
+use serde::{Deserialize, Serialize};
+use solana_sdk::pubkey::Pubkey;
+use std::collections::HashSet;
+use std::fmt;
+
+/// Trade action type
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum TradeAction {
+    Buy,
+    Sell,
+}
+
+impl fmt::Display for TradeAction {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            TradeAction::Buy => write!(f, "Buy"),
+            TradeAction::Sell => write!(f, "Sell"),
+        }
+    }
+}

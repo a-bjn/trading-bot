@@ -1,0 +1,224 @@
+# Solana Trading Bot Configuration
+
+# RPC Configuration
+rpc:
+  primary_rpc_url: "https://api.mainnet-beta.solana.com"
+  backup_rpc_urls:
+    - "https://solana-api.projectserum.com"
+    - "https://rpc.ankr.com/solana"
+  ws_url: "wss://api.mainnet-beta.solana.com"
+  helius_api_key: null  # Set via env: HELIUS_API_KEY
+  max_retries: 3
+  timeout_seconds: 30
+  rate_limit_per_second: 10
+  enable_connection_pooling: true
+
+# Copy Trading Configuration
+copy_trading:
+  enabled: true
+  target_wallets:
+    - address: "54Pz1e35z9uoFdnxtzjp7xZQoFiofqhdayQWBMN7dsuy"
+      name: "Primary Target"
+      copy_percentage: 100  # Copy 100% of their position size
+      max_copy_amount_sol: 0.5
+      min_copy_amount_sol: 0.01
+      copy_sells: true
+      copy_buys: true
+      delay_ms: 0  # Execute immediately (0-100ms delay)
+  
+  # Copy trade execution settings
+  execution:
+    fast_mode: true  # Prioritize speed over cost
+    max_execution_time_seconds: 3
+    use_jito: false  # Set to true if using Jito for MEV protection
+    priority_fee_multiplier: 1.5  # Multiply target wallet's priority fee
+
+# Volume Spike Scalping Configuration
+volume_spike_scalping:
+  enabled: true
+  
+  # Detection thresholds
+  spike_threshold_percentage: 300  # 300% volume increase
+  detection_window_seconds: 60
+  min_base_volume_sol: 0.5  # Minimum volume before spike
+  
+  # Entry criteria
+  min_liquidity_sol: 5.0
+  max_liquidity_sol: 50.0  # Avoid highly liquid pools (harder to move)
+  min_holders: 10
+  max_market_cap_sol: 100.0
+  
+  # Position sizing
+  entry_amount_sol: 0.1
+  max_position_size_sol: 0.3
+  
+  # Exit strategy
+  quick_profit_target_percentage: 20.0
+  quick_profit_time_limit_seconds: 300  # Exit within 5 minutes
+  stop_loss_percentage: 15.0
+  trailing_stop_percentage: 10.0
+  
+  # Risk limits
+  max_concurrent_scalp_trades: 2
+  cooldown_between_trades_seconds: 30
+
+# General Trading Configuration
+trading:
+  # Position sizing
+  default_trade_size_sol: 0.1
+  max_position_size_sol: 0.5
+  min_trade_size_sol: 0.01
+  
+  # Execution settings
+  slippage_bps: 500  # 5%
+  priority_fee_lamports: 100000  # 0.0001 SOL
+  max_priority_fee_lamports: 500000  # 0.0005 SOL
+  compute_unit_limit: 200000
+  
+  # Transaction settings
+  max_retry_attempts: 2
+  transaction_timeout_seconds: 30
+  confirmation_commitment: "confirmed"  # confirmed or finalized
+  
+  # Concurrent trading
+  max_concurrent_trades: 3
+  max_trades_per_token: 1
+
+# Risk Management
+risk_management:
+  # Stop loss and take profit
+  default_stop_loss_percentage: 20.0
+  default_take_profit_percentage: 50.0
+  use_trailing_stop: true
+  trailing_stop_activation_percentage: 30.0
+  trailing_stop_distance_percentage: 15.0
+  
+  # Position limits
+  max_position_percentage: 20.0  # Max 20% of balance in one position
+  max_total_exposure_percentage: 60.0  # Max 60% of balance deployed
+  
+  # Daily limits
+  max_daily_loss_sol: 1.0
+  max_daily_trades: 50
+  max_consecutive_losses: 5
+  
+  # Emergency controls
+  min_sol_balance: 0.05  # Stop trading if balance below this
+  emergency_stop_loss_percentage: 30.0  # Emergency exit on extreme loss
+  panic_sell_enabled: true
+
+# Token Filtering
+token_filters:
+  # Liquidity requirements
+  min_liquidity_sol: 2.0
+  max_liquidity_sol: 1000.0
+  
+  # Market cap limits
+  min_market_cap_sol: 1.0
+  max_market_cap_sol: 500.0
+  
+  # Holder requirements
+  min_holders: 5
+  max_holder_concentration_percentage: 30.0  # Top holder max %
+  
+  # Token age
+  min_token_age_minutes: 5
+  max_token_age_hours: 24
+  
+  # Contract safety
+  check_mint_authority: true
+  check_freeze_authority: true
+  require_immutable_metadata: false
+  
+  # Blacklist
+  blacklisted_tokens: []
+  blacklisted_creators: []
+
+# PumpFun Specific Configuration
+pumpfun:
+  enabled: true
+  program_id: "6EF8rrecthR5Dkzon8Nwu78hRvfCKubJ14M5uBEwF6P"
+  
+  # Monitoring
+  monitor_new_tokens: true
+  monitor_graduated_tokens: false
+  
+  # Filters
+  min_initial_liquidity_sol: 2.0
+  max_bonding_curve_progress_percentage: 80.0
+  
+  # Strategy
+  snipe_new_launches: false
+  target_early_stage: true  # Trade tokens 10-40% bonding curve
+
+# Monitoring and Alerts
+monitoring:
+  # Logging
+  log_level: "info"  # trace, debug, info, warn, error
+  log_to_file: true
+  log_rotation_size_mb: 100
+  max_log_files: 10
+  
+  # Metrics
+  enable_metrics: true
+  metrics_port: 9090
+  
+  # Health checks
+  enable_health_check: true
+  health_check_port: 8080
+  health_check_interval_seconds: 60
+
+# Telegram Notifications
+telegram:
+  enabled: true
+  
+  # Alert types
+  notify_on_trade: true
+  notify_on_error: true
+  notify_on_profit: true
+  notify_on_loss: true
+  notify_on_volume_spike: true
+  notify_on_copy_trade: true
+  
+  # Alert thresholds
+  min_profit_notification_sol: 0.01
+  min_loss_notification_sol: 0.01
+  
+  # Rate limiting
+  max_messages_per_minute: 10
+
+# Performance Tuning
+performance:
+  # Connection pooling
+  max_rpc_connections: 10
+  rpc_timeout_seconds: 10
+  
+  # WebSocket settings
+  ws_reconnect_delay_seconds: 5
+  ws_ping_interval_seconds: 30
+  
+  # Cache settings
+  cache_token_metadata: true
+  cache_ttl_seconds: 300
+  
+  # Prefetch settings
+  prefetch_token_accounts: true
+  prefetch_program_accounts: false
+
+# Advanced Settings
+advanced:
+  # Transaction building
+  use_versioned_transactions: true
+  use_address_lookup_tables: false
+  
+  # Priority fee strategy
+  dynamic_priority_fees: true
+  priority_fee_percentile: 75  # Use 75th percentile of recent fees
+  
+  # Simulation
+  simulate_transactions: true
+  skip_preflight: false
+  
+  # MEV protection
+  use_private_rpc: false
+  use_jito_bundle: false
